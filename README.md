@@ -14,37 +14,26 @@ https://www.digitalocean.com/community/tutorials/how-to-install-and-configure-ku
   - If you want to have nodes somewhere else..
     - ansible/roles/kubernetes/templates are using COREOS_PRIVATE_IPV4 environment variable for setting correct IP
     - /etc/environment file has to contain following variables describing network
-      ```bash
-      COREOS_PRIVATE_IPV4=10.10.10.11
-      COREOS_PUBLIC_IPV4=100.100.100.101
-      ```
-- Ansible installed locally (pip install ansible)
+      - `COREOS_PRIVATE_IPV4=10.10.10.11`
+      - `COREOS_PUBLIC_IPV4=100.100.100.101`
+- Ansible installed locally
+  `pip install ansible` / `brew install ansible`
 
 ##Steps
 - Create cluster host config for ansible
   - Copy ansible/inventory/example.cluster into ansible/inventory/dev.cluster
   - There must be atleast one master and one minion (or many)
-  - Set public IP of eache node
+  - Set public IP of each node
   - Set master_private_ip to match private ip address on master node
 - Run ansible playbooks (in ansible directory)
-  - To setup python on CoreOS, ansible needs it
-    ```bash
-    ansible-playbook -i inventory/dev.cluster setup-python.yml
-    ```
-  - Install kubernetes and other dependencies
-    ```bash
-    ansible-playbook -i inventory/dev.cluster setup-kubernetes.yml
-    ```
+  - To setup python on CoreOS, ansible needs it:
+    `ansible-playbook -i inventory/dev.cluster setup-python.yml`
+  - Install kubernetes and other dependencies:
+    `ansible-playbook -i inventory/dev.cluster setup-kubernetes.yml`
 - Verify that cluster is up and running
   - SSH into master node
-  - Check if fleet knows about nodes
-    ```bash
-    fleetctl list-machines
-    ```
-  - Check if kubernetes knows about minions
-    ```bash
-    kubecfg list minions
-    ```
+  - Check if fleet knows about nodes: `fleetctl list-machines`
+  - Check if kubernetes knows about minions: `kubecfg list minions`
 
 #TO-DO
 #Deployments
