@@ -9,14 +9,15 @@ https://www.digitalocean.com/community/tutorials/how-to-install-and-configure-ku
 #Installation
 ##Requirements
 - 2x (atleast) CoreOS nodes (Version: 5.22.2.0 (alpha) tested)
+  - Private network between nodes
   - DigitalOcean hosted machines tested
   - If you want to have nodes somewhere else..
-    - You have to modify ansible/roles/kubernetes/templates regarding COREOS_PRIVATE_IPV4 environment variable
-    - This variable must be set into /etc/environment file in the node also
-      - Example file:
-        COREOS_PRIVATE_IPV4=10.10.10.11
-        COREOS_PUBLIC_IPV4=100.100.100.101
-  - Private network between nodes
+    - ansible/roles/kubernetes/templates are using COREOS_PRIVATE_IPV4 environment variable for setting correct IP
+    - /etc/environment file has to contain following variables describing network
+      ```bash
+      COREOS_PRIVATE_IPV4=10.10.10.11
+      COREOS_PUBLIC_IPV4=100.100.100.101
+      ```
 - Ansible installed locally (pip install ansible)
 
 ##Steps
@@ -26,15 +27,24 @@ https://www.digitalocean.com/community/tutorials/how-to-install-and-configure-ku
   - Set public IP of eache node
   - Set master_private_ip to match private ip address on master node
 - Run ansible playbooks (in ansible directory)
-  - ansible-playbook -i inventory/dev.cluster setup-python.yml
-    - To setup python on CoreOS, ansible needs it
-  - ansible-playbook -i inventory/dev.cluster setup-kubernetes.yml
+  - To setup python on CoreOS, ansible needs it
+    ```bash
+    ansible-playbook -i inventory/dev.cluster setup-python.yml
+    ```
+  - Install kubernetes and other dependencies
+    ```bash
+    ansible-playbook -i inventory/dev.cluster setup-kubernetes.yml
+    ```
 - Verify that cluster is up and running
   - SSH into master node
   - Check if fleet knows about nodes
-    - fleetctl list-machines
+    ```bash
+    fleetctl list-machines
+    ```
   - Check if kubernetes knows about minions
-    - kubecfg list minions
+    ```bash
+    kubecfg list minions
+    ```
 
 #TO-DO
 #Deployments
