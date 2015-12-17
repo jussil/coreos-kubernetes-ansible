@@ -1,0 +1,19 @@
+[Unit]
+Description=fleet daemon
+{% if node_role == "master" %}
+Wants=etcd.service
+After=etcd.service
+{% endif %}
+Wants=fleet.socket
+After=fleet.socket
+
+[Service]
+Environment="FLEET_ETCD_SERVERS=http://{% if node_role == "master" %}127.0.0.1{% else %}{{ master_private_ip }}{% endif %}:4001"
+Environment="FLEET_METADATA=role={{ node_role }}"
+Environment="FLEET_PUBLIC_IP={{ private_ip.stdout }}"
+ExecStart=/usr/bin/fleetd
+Restart=always
+RestartSec=10s
+
+[Install]
+WantedBy=multi-user.target

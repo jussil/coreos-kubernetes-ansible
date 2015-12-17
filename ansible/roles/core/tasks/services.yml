@@ -1,0 +1,119 @@
+---
+- name: Configure etcd service
+  sudo: yes
+  template: src="etcd.service.j2"
+            dest="/etc/systemd/system/etcd.service"
+            owner=root
+            group=root
+            mode=0644
+  when: inventory_hostname in groups.etcd_server
+  notify:
+    - reload systemd
+    - restart etcd
+
+- name: Configure flannel service
+  sudo: yes
+  template: src="flannel.service.j2"
+            dest="/etc/systemd/system/flannel.service"
+            owner=root
+            group=root
+            mode=0644
+  notify:
+    - reload systemd
+    - restart flannel
+
+- name: Configure docker service
+  sudo: yes
+  template: src="docker.service.j2"
+            dest="/etc/systemd/system/docker.service"
+            owner=root
+            group=root
+            mode=0644
+  notify:
+    - reload systemd
+    - restart docker
+
+- name: Configure kube-apiserver
+  sudo: yes
+  template: src="kube-apiserver.service.j2"
+            dest="/etc/systemd/system/kube-apiserver.service"
+            owner=root
+            group=root
+            mode=0644
+  when: inventory_hostname in groups.k8s_api_server
+  notify:
+    - reload systemd
+    - restart kube-apiserver
+
+- name: Configure kube-controller-manager
+  sudo: yes
+  template: src="kube-controller-manager.service.j2"
+            dest="/etc/systemd/system/kube-controller-manager.service"
+            owner=root
+            group=root
+            mode=0644
+  when: inventory_hostname in groups.k8s_api_server
+  notify:
+    - reload systemd
+    - restart kube-controller-manager
+
+- name: Configure kube-kubelet
+  sudo: yes
+  template: src="kube-kubelet.service.j2"
+            dest="/etc/systemd/system/kube-kubelet.service"
+            owner=root
+            group=root
+            mode=0644
+  when: inventory_hostname in groups.k8s_kube
+  notify:
+    - reload systemd
+    - restart kube-kubelet
+
+- name: Configure kube-proxy
+  sudo: yes
+  template: src="kube-proxy.service.j2"
+            dest="/etc/systemd/system/kube-proxy.service"
+            owner=root
+            group=root
+            mode=0644
+  when: inventory_hostname in groups.k8s_kube
+  notify:
+    - reload systemd
+    - restart kube-proxy
+
+- name: Configure kube-scheduler
+  sudo: yes
+  template: src="kube-scheduler.service.j2"
+            dest="/etc/systemd/system/kube-scheduler.service"
+            owner=root
+            group=root
+            mode=0644
+  when: inventory_hostname in groups.k8s_api_server
+  notify:
+    - reload systemd
+    - restart kube-scheduler
+
+- name: Enable etcd service
+  sudo: yes
+  service: name=etcd state=started enabled=yes
+  when: inventory_hostname in groups.etcd_server
+
+- name: Enable and start flannel service
+  sudo: yes
+  service: name=flannel state=started enabled=yes
+
+- name: Enable and start docker service
+  sudo: yes
+  service: name=docker state=started enabled=yes
+
+- name: Enable services for k8s_api_server
+  sudo: yes
+  service: name="{{ item }}" state=started enabled=yes
+  when: inventory_hostname in groups.k8s_api_server
+  with_items: k8s_api_server_services
+
+- name: Enable services for k8s_kube
+  sudo: yes
+  service: name="{{ item }}" state=started enabled=yes
+  when: inventory_hostname in groups.k8s_kube
+  with_items: k8s_kube_services

@@ -1,0 +1,44 @@
+#
+# KUBERNETES
+#
+
+# Kubernetes base binary url
+k8s_binary_url: http://binary.druid.fi/kubernetes/1.0.3/linux/amd64
+#k8s_api_servers:
+# - IPHERE
+k8s_api_server_services:
+  - kube-apiserver
+  - kube-controller-manager
+  - kube-scheduler
+
+k8s_kube_services:
+  - kube-kubelet
+  - kube-proxy
+
+#
+# DOCKER
+#
+
+docker_binary_url: https://get.docker.com/builds/Linux/x86_64/docker-1.6.2
+
+#
+# ETCD
+#
+
+# Kubernetes base binary url
+etcd_binary_url: http://binary.druid.fi/etcd/2.1.1/linux/amd64
+
+#etcd_servers:
+# - IPHERE
+
+#
+# FLANNEL
+#
+
+# Flannel binary url
+flannel_binary_url: http://binary.druid.fi/flannel/0.5.2/flanneld
+# Used backend for flannel
+flannel_backend: vxlan
+# Flannel network
+flannel_network: 10.10.0.0/16
+portal_net: 10.200.0.0/16

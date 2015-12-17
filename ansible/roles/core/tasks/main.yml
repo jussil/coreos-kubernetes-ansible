@@ -1,0 +1,9 @@
+---
+# Prepare node environment
+- include: prepare.yml
+
+# Install binaries
+- include: install_binary.yml
+
+# Configure services
+- include: services.yml

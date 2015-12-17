@@ -1,6 +1,0 @@
----
-- hosts: cluster
-  sudo: true
-  roles:
-    - defunctzombie.coreos-bootstrap
-    - kubernetes

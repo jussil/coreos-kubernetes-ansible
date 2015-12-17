@@ -1,0 +1,11 @@
+---
+# Install python
+- hosts: all
+  gather_facts: False
+  roles:
+    - defunctzombie.coreos-bootstrap
+
+# Install core stuff
+- hosts: all
+  roles:
+    - core

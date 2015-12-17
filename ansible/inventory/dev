@@ -1,0 +1,14 @@
+#
+# DEV
+#
+
+[master]
+100.100.100.101
+[master:vars]
+role=master
+
+[dev:children]
+master
+
+[digitalocean:children]
+dev

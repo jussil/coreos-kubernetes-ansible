@@ -1,0 +1,42 @@
+---
+- name: Create /opt/bin for custom binaries
+  sudo: yes
+  file: >
+    path=/opt/bin
+    state=directory
+    owner=core
+    group=core
+
+- name: Download docker binary
+  get_url: >
+    url={{ docker_binary_url }}
+    dest=/opt/bin/docker
+    mode="0755"
+
+- name: Download flannel binary
+  get_url: >
+    url={{ flannel_binary_url }}
+    dest=/opt/bin/flanneld
+    mode="0755"
+
+- name: Download etcd binaries
+  get_url: >
+    url={{ etcd_binary_url }}/{{ item }}
+    dest=/opt/bin/{{ item }}
+    mode="0755"
+  with_items:
+    - etcd
+    - etcdctl
+
+- name: Download kubernetes binaries
+  get_url: >
+    url={{ k8s_binary_url }}/{{ item }}
+    dest=/opt/bin/{{ item }}
+    mode="0755"
+  with_items:
+    - kube-apiserver
+    - kube-controller-manager
+    - kubelet
+    - kube-proxy
+    - kube-scheduler
+    - kubectl

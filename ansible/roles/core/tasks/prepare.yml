@@ -1,0 +1,39 @@
+---
+# Set private ip to variable
+- name: Grab private ip
+  shell: source /etc/environment && echo $COREOS_PRIVATE_IPV4
+  register: fetched_private_ip
+
+# Set it as fact
+- name: Set private ip fact
+  set_fact: private_ip="{{ fetched_private_ip.stdout }}"
+
+# Set first_master variable to contain hostname of first "master" node
+- name: Set first_master fact
+  set_fact: first_master="{{ groups["master"][0] }}"
+
+# Set master_private_ip variable to contain IP of first "master" node
+- name: Set master_private_ip fact
+  set_fact: master_private_ip="{{ hostvars[first_master].private_ip }}"
+
+- name: Set k8s_api_server & etcd_servers fact
+  set_fact:
+    k8s_api_servers: |
+      {% set comma = joiner(",") %}
+      {% for item in groups["k8s_api_server"] -%}
+        {{ comma() }}{{ hostvars[item].private_ip }}:8080
+      {%- endfor %}
+    etcd_servers: |
+      {% set comma = joiner(",") %}
+      {% for item in groups["etcd_server"] -%}
+        {{ comma() }}http://{{ hostvars[item].private_ip }}:2379
+      {%- endfor %}
+ 
+# Set service environment file
+- name: Set service environment file
+  sudo: yes
+  template: src="kubernetes.env.j2"
+            dest="/etc/kubernetes.env"
+            owner=root
+            group=root
+            mode=0644
